@@ -1,1 +1,41 @@
-This is the project DriveSavvy
+Project DriveSavvy(Smart Solutions for Car Owners)
+
+
+User roles (Owner, Driver, Admin)
+Auth system
+Profile management
+Driver verification
+Job posting and application
+
+
+ 
+---This is the folder structure
+
+DriveSavvy/
+│
+├── client/                     # React Frontend
+│   ├── public/
+│   └── src/
+│       ├── assets/
+│       ├── components/         # Reusable components
+│       ├── pages/              # Pages (e.g., Login, Dashboard)
+│       ├── routes/             # React Router configs
+│       ├── services/           # API calls
+│       ├── contexts/           # Auth/User contexts
+│       ├── hooks/              # Custom React hooks
+│       ├── styles/             # Tailwind config, global CSS
+│       └── App.jsx
+│       └── main.jsx
+│
+├── server/                     # Express Backend
+│   ├── config/                 # DB connection, env config
+│   ├── controllers/            # Logic for routes
+│   ├── middlewares/           # Auth, role check, etc.
+│   ├── models/                 # Mongoose models
+│   ├── routes/                # Express routes
+│   ├── utils/                 # Helper functions
+│   └── server.js              # Entry point
+│
+├── .env
+├── package.json
+├── README.md
