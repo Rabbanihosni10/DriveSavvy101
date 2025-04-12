@@ -2,6 +2,7 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import userModel from '../models/userModel.js';
+import transporter from '../config/nodemailer.js';
 
 export const Register =async(req,res)=>{
     const {name,email,phone,password,role}=req.body;
@@ -35,7 +36,18 @@ export const Register =async(req,res)=>{
             secure: process.env.NODE_ENV=== 'Production',
             sameSite: process.env.NODE_ENV=== 'Production'?'None':'strict',
             maxAge: 7*24*60*60*1000 // 7days
-        })
+        });
+
+        //sent an email
+        const mailOptions={
+            from: process.env.SENDER_EMAIL,
+            to: email,
+            subject: 'Welcome to Drive Savvy',
+            text:`Welcome to DriveSavvy. Your account has been created with email id:${email}`
+        }
+
+        await transporter.sendMail(mailOptions);
+
         return res.json({success:true,message: "User Registerd"})
     }
     catch(error){
@@ -89,4 +101,61 @@ export const Logout=async(req,res)=>{
     catch(error){
         return res.json({success:false,message:error.message})
     }
+}
+
+// send verification otp to user email
+export const SendVerifyOTP=async(req,res)=>{
+    try{
+        const {userId}=req.body;
+
+        const user=await userModel.findById(userId);
+
+        if(user.isAccountVerified){
+            return res.json({success: false, message:'Account is already verified'})
+        }
+
+        const otp= String(Math.floor(100000+ Math.random()*900000));
+        user.verifyOTP=otp;
+        user.verifyOTPExpireAt=Date.now()+24*60*60*1000;
+
+
+        await user.save();
+        const mailOption={
+            from: process.env.SENDER_EMAIL,
+            to: user.email,
+            subject: 'Account Verification',
+            text: `Your OTP is ${otp}. Verify your account with this OTP. Thank Your!`
+        }
+        await transporter.sendMail(mailOption);
+    }
+    catch(error){
+        return res.json({success:false,message:error.message})
+    }
+}
+
+export const verifyEmail=async(req,res)=>{
+ const {userId,otp}=req.body;
+ if(!userId || !otp){
+    return res.json({success:false,message:'Missing Details!'})
+ }
+ try{
+     const user= await userModel.findById(userId);
+     if(!user){
+        return res.json({success:false,message: "User Not Found!"})
+     }
+     if(user.verifyOTP === '' || user.verifyOTP !=otp){
+        return res.json({success:false,message:`Invalid OTP` })
+     }
+     if(user.verifyOTPExpireAt<Date.now()){
+        return res.json({success:false,message:`OTP Expired!`})
+     }
+     user.isAccountVerified=true;
+     user.verifyOtp='';
+     user.verifyOtpExpireAt=0;
+     await user.save();
+     return res.json({success:true,mesage:'Email Verrified Successfully!'})
+   }
+ catch(error){
+    return res.json({success:false,message:error.message});
+ }   
 }
