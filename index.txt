@@ -39,3 +39,58 @@ DriveSavvy/
 ├── .env
 ├── package.json
 ├── README.md
+
+
+
+
+start the project-
+terminal
+>cd server     // for backend 
+>npm init
+>npm install express cors dotenv nodemon jsonwebtoken mongoose bcryptjs nodemailer cookie-parser
+
+express- to create app
+cors - allow to connect backend with frontend 
+dotenv- help us to store the envionment variables in the backend
+nodemon- restart the backend whenever we change anything
+jsonwebtoken-  create the token for authentication
+mongoose -  that help us to connect with MONGODB 
+bcryptjs- encrypt the password and save in the database
+nodemailer- will help us to send the emails
+cookie-parser- will help us to send the cookies in the api
+
+> package.json > after main > "type":"module"
+"type":"module" - we can use import and export in our project 
+
+>server.js > 
+import express from 'express';
+import cors from 'cors';
+import 'dotenv/config';
+import cookieParser from 'cookie-parser';
+const app= express();
+const PORT=process.env.PORT || 1205
+app.use(express.json());
+app.use(cookieParser());
+app.use(cors({credentials:true}));
+app.listen(PORT,()=>{
+    console.log(`Server os running on PORT: ${PORT}`);
+})
+/// we can also add call verification system or feature
+
+
+
+
+
+
+
+
+
+
+
+///On client side 
+
+cd client
+npm create vite@latest
+npm install
+npm install axios react-router-dom react-toastify
+
